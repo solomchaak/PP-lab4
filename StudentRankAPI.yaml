@@ -1,0 +1,582 @@
+openapi: 3.0.1
+info:
+  title: Students' Rank API
+  description: You can rate students here
+  contact:
+    #name: Ivan
+    email: ivan.solomchak.knm.2020@lpnu.ua
+  version: 1.0.0
+  
+servers:
+  - url: https://devapi.com
+  - url: http://devapi.com
+
+tags:
+- name: student
+  description: Operations with student
+- name: user
+  description: Operations with user
+- name: rank
+  description: Operations with rank
+
+paths:
+  /student:
+    description: Student Resourse
+    post:
+      tags:
+      - student
+      summary: Add a new student
+      description: Operation to add student
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Student'
+      responses: 
+        '201':
+          description: Record Successfully Added
+      security:
+        - rank_auth:
+          - admin
+  
+  /students:        
+    get: 
+      tags:
+      - student
+      summary: Get all students
+      description: Operation to fetch students
+      parameters: 
+        - in: query
+          name: studentName
+          required: true
+          schema: 
+            type: string
+            example: John
+      responses: 
+        '200': 
+          description: Successful Respons
+          content: 
+            application/json: 
+              schema:
+                $ref: '#/components/schemas/Students'
+        '400':
+          description: Something went wrong, probably you dont have any students yet
+      security:
+        - rank_auth:
+          - write:students
+          - read:students
+          
+  /student/{rankId}/{studentGrade}:
+   get:
+      tags:
+      - student
+      summary: Find students by their grade
+      description: grade should be provided as double value
+      operationId: findStudentsByGrade
+      parameters:
+      - name: grade
+        in: query
+        description: grade values that need to be considered for filter
+        required: true
+        schema:
+          type: number
+          format: double
+      - name: rankId
+        in: path
+        required: true
+        description: 'bestrating id'
+        schema:
+          type: integer
+          format: int64
+      - name: studentGrade
+        in: path
+        required: true
+        description: 'the id of student to get'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Successful operation. All of the best students are returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Students'
+        403:
+          description: Invalid input
+          content: {}
+      security:
+        - rank_auth:
+          - write:students
+          - read:students
+      
+  /student/{studentId}:
+    get: 
+      tags:
+      - student
+      summary: Find a certain student
+      description: Returns one car with stated ID
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema: 
+            type: integer
+      responses:
+        '200':
+          description: Success Response with Path Parametr
+          content: 
+            application/json: 
+              schema: 
+                $ref: '#/components/schemas/Student'
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Student not found
+          content: {}
+      security:
+        - rank_auth:
+          - write:students
+          - read:students
+          
+    put:
+      tags:
+      - student
+      summary: Update a student by id
+      operationId: updateStudent
+      parameters:
+      - name: studentId
+        in: path
+        description: An ID of student that needs to be updated
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 0
+      requestBody:
+            description: Updated student object
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Student'    
+      responses:
+        '200':
+          description: successful operation
+          content: {}
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: A certain student not found
+          content: {}
+      security:
+       - rank_auth:
+         - admin          
+    delete:
+      tags:
+      - student
+      summary: Delete a student by id
+      operationId: deleteStudent
+      parameters:
+      - name: api_key
+        in: header
+        schema:
+          type: string
+      - name: studentId
+        in: path
+        description: Student id to delete
+        required: true
+        schema:
+          type: integer
+          example: 3
+      responses:
+        '200':
+          description: Successful operation
+          content: {}
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: A certain student not found
+          content: {}
+      security:
+       - rank_auth:
+         - admin 
+
+  /user:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content: {}
+        '400':
+          description: bad request
+          content: {}
+      x-codegen-request-body-name: body
+      
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Logs user into the system
+      operationId: loginUser
+      parameters:
+      - name: userName
+        in: query
+        description: The user name for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+          content: {}
+          
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      responses:
+        '200':
+          description: successful operation
+          content: {}
+          
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        description: 'The name that needs to be fetched. Use user1 for testing. '
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      security:
+        - rank_auth:
+          - read:users
+          
+    put:
+      tags:
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: name that need to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: Invalid user supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      x-codegen-request-body-name: body
+      security:
+        - rank_auth:
+          - admin
+          
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        schema:
+          type: string
+      responses:
+        400:
+          description: Invalid username supplied
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      security:
+      - rank_auth:
+        - admin  
+
+  /rank:
+    post:
+      tags:
+      - rank
+      summary: Add a new rank
+      description: Operation to add student
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Rank'
+      responses: 
+        '201':
+          description: Record Successfully Added
+        '400':
+          description: Invalid Reservation
+          content: {}
+      x-codegen-request-body-name: body
+      security:
+      - rank_auth:
+        - write:rank
+        - read:rank
+    
+    get:
+      tags:
+      - rank
+      summary: Get all ranks
+      description: getting of all ranks
+      operationId: getRanks
+      responses:
+        200:
+          description: "successful operation. all ranks are returned"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: '#/components/schemas/Ranks'
+        401:
+          description: 'Something went wrong, probably you dont have any ranks yet'
+      security:
+      - api_key: []
+      
+  /rank/{rankId}:
+    put:
+      tags:
+      - rank
+      summary: Update rank
+      description: updating rank owned by current user
+      operationId: updateRank
+      parameters:
+      - name: rankId
+        in: path
+        required: true
+        description: 'the rank id that needs to be updated'
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: 'rank object updated'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rank'
+        required: true
+      responses:
+        200:
+          description:  "rank is successfully updated"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rank'
+        401:
+          description: 'Something went wrong, probably you dont have any ranks yet'
+        404:
+          description: Rank not found.
+      security:
+      - rank_auth:
+        - write:rank
+        - read:rank     
+          
+    delete:
+      tags:
+      - rank
+      summary: Delete rating
+      description: deleting existing rating owned by current user
+      operationId: deleteRating
+      parameters:
+      - name: rankId
+        in: path
+        required: true
+        description: 'rating id that needs to be updated'
+        schema:
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid ID supplied
+          content: {}
+        '404':
+          description: Reservation not found
+          content: {}
+      security:
+      - rank_auth:
+        - write:user
+        - read:user
+
+
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        StudentId:
+          type: integer
+          example: 3
+        StudentFirstName:
+          type: string
+          example: John
+        StudentLastName:
+          type: string
+          example: Cena
+        StudentAverageMark:
+          type: number
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 12
+          example: 10.4
+        stuudentAge:
+          type: integer
+          example: 16
+      xml:
+        name: student
+    
+    Students:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Student'
+        
+    User: 
+      type: object
+      properties:
+        Id:
+          type: integer
+          format: int64
+        userName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        userStatus:
+          type: integer
+          description: User Status
+          format: int32
+      xml:
+        name: user
+        
+    Rank:
+      type: object
+      properties:
+        studentRank:
+          type: integer
+          example: 6
+        student:
+          $ref: '#/components/schemas/Student'
+        lastChange:
+          description: Date of last change 
+          type: string
+          format: date-time
+        changedBy:
+          allOf:
+            - $ref: '#/components/schemas/User'
+            - description: Person who made a certain change
+            
+    Ranks:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Rank'
+        
+        
+  securitySchemes:
+    rank_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://devapi.com/oauth/dialog
+          scopes:
+            write:students: modify students in your account
+            read:students: read your students
+            read:users: read users
+            write:rank: modify reservations in your account
+            read:rank: read reservations
+            admin: admin priviledges
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header

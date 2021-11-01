@@ -8,7 +8,7 @@ info:
   version: 1.0.0
   
 servers:
-  - url: https://devapi.com
+  - url: https://IvanSolomchak_student_rank_lab5.com
   - url: http://devapi.com
 
 tags:
@@ -32,6 +32,7 @@ paths:
           application/json:
             schema: 
               $ref: '#/components/schemas/Student'
+        required: true
       responses: 
         '201':
           description: Record Successfully Added
@@ -45,13 +46,6 @@ paths:
       - student
       summary: Get all students
       description: Operation to fetch students
-      parameters: 
-        - in: query
-          name: studentName
-          required: true
-          schema: 
-            type: string
-            example: John
       responses: 
         '200': 
           description: Successful Respons
@@ -66,11 +60,11 @@ paths:
           - write:students
           - read:students
           
-  /student/{rankId}/{studentGrade}:
+  /student/{rankId}:
    get:
       tags:
       - student
-      summary: Find students by their grade
+      summary: Find best students by their grade
       description: grade should be provided as double value
       operationId: findStudentsByGrade
       parameters:
@@ -85,13 +79,6 @@ paths:
         in: path
         required: true
         description: 'bestrating id'
-        schema:
-          type: integer
-          format: int64
-      - name: studentGrade
-        in: path
-        required: true
-        description: 'the id of student to get'
         schema:
           type: integer
           format: int64
@@ -155,11 +142,12 @@ paths:
           format: int64
           example: 0
       requestBody:
-            description: Updated student object
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Student'    
+        description: Updated student object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'   
+        required: true
       responses:
         '200':
           description: successful operation
@@ -385,6 +373,7 @@ paths:
           application/json:
             schema: 
               $ref: '#/components/schemas/Rank'
+        required: true
       responses: 
         '201':
           description: Record Successfully Added
@@ -396,7 +385,8 @@ paths:
       - rank_auth:
         - write:rank
         - read:rank
-    
+  
+  /ranks:  
     get:
       tags:
       - rank
@@ -458,14 +448,14 @@ paths:
     delete:
       tags:
       - rank
-      summary: Delete rating
-      description: deleting existing rating owned by current user
+      summary: Delete rank
+      description: deleting existing rank owned by current user
       operationId: deleteRating
       parameters:
       - name: rankId
         in: path
         required: true
-        description: 'rating id that needs to be updated'
+        description: 'rank id that needs to be updated'
         schema:
           type: integer
           format: int64
@@ -476,7 +466,7 @@ paths:
           description: Invalid ID supplied
           content: {}
         '404':
-          description: Reservation not found
+          description: Rank not found
           content: {}
       security:
       - rank_auth:
@@ -487,6 +477,11 @@ paths:
 components:
   schemas:
     Student:
+      required:
+      - StudentId
+      - StudentFirstName
+      - StudentLastName
+      - StudentAverageGrade
       type: object
       properties:
         StudentId:
@@ -498,7 +493,7 @@ components:
         StudentLastName:
           type: string
           example: Cena
-        StudentAverageMark:
+        StudentAverageGrade:
           type: number
           minimum: 0
           exclusiveMinimum: true
@@ -516,6 +511,13 @@ components:
         $ref: '#/components/schemas/Student'
         
     User: 
+      required:
+      - Id
+      - userName
+      - firstName
+      - lastName
+      - email
+      - password
       type: object
       properties:
         Id:
@@ -541,13 +543,19 @@ components:
         name: user
         
     Rank:
+      required:
+      - rankId
+      - students
+      - lastChange
+      - changedBy
       type: object
       properties:
-        studentRank:
+        rankId:
           type: integer
-          example: 6
-        student:
-          $ref: '#/components/schemas/Student'
+          format: int64
+          example: 7
+        students:
+          $ref: '#/components/schemas/Students'
         lastChange:
           description: Date of last change 
           type: string

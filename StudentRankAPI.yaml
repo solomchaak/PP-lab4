@@ -3,13 +3,12 @@ info:
   title: Students' Rank API
   description: You can rate students here
   contact:
-    #name: Ivan
+    name: developer Ivan
     email: ivan.solomchak.knm.2020@lpnu.ua
   version: 1.0.0
-  
+
 servers:
-  - url: https://devapi.com
-  - url: http://devapi.com
+  - url: https://IvanSolomchak_student_rank_lab5.com
 
 tags:
 - name: student
@@ -27,91 +26,47 @@ paths:
       - student
       summary: Add a new student
       description: Operation to add student
-      requestBody: 
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: '#/components/schemas/Student'
-      responses: 
+        required: true
+      responses:
         '201':
           description: Record Successfully Added
+        '400':
+          description: Wrong input
+          content: {}
       security:
         - rank_auth:
           - admin
-  
-  /students:        
-    get: 
+
+  /students:
+    get:
       tags:
       - student
       summary: Get all students
       description: Operation to fetch students
-      parameters: 
-        - in: query
-          name: studentName
-          required: true
-          schema: 
-            type: string
-            example: John
-      responses: 
-        '200': 
+      responses:
+        '200':
           description: Successful Respons
-          content: 
-            application/json: 
+          content:
+            application/json:
               schema:
-                $ref: '#/components/schemas/Students'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Student'
         '400':
           description: Something went wrong, probably you dont have any students yet
       security:
         - rank_auth:
           - write:students
           - read:students
-          
-  /student/{rankId}/{studentGrade}:
-   get:
-      tags:
-      - student
-      summary: Find students by their grade
-      description: grade should be provided as double value
-      operationId: findStudentsByGrade
-      parameters:
-      - name: grade
-        in: query
-        description: grade values that need to be considered for filter
-        required: true
-        schema:
-          type: number
-          format: double
-      - name: rankId
-        in: path
-        required: true
-        description: 'bestrating id'
-        schema:
-          type: integer
-          format: int64
-      - name: studentGrade
-        in: path
-        required: true
-        description: 'the id of student to get'
-        schema:
-          type: integer
-          format: int64
-      responses:
-        200:
-          description: Successful operation. All of the best students are returned
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Students'
-        403:
-          description: Invalid input
-          content: {}
-      security:
-        - rank_auth:
-          - write:students
-          - read:students
-      
+
+
   /student/{studentId}:
-    get: 
+    get:
       tags:
       - student
       summary: Find a certain student
@@ -120,14 +75,14 @@ paths:
         - in: path
           name: studentId
           required: true
-          schema: 
+          schema:
             type: integer
       responses:
         '200':
           description: Success Response with Path Parametr
-          content: 
-            application/json: 
-              schema: 
+          content:
+            application/json:
+              schema:
                 $ref: '#/components/schemas/Student'
         '400':
           description: Invalid ID supplied
@@ -139,7 +94,7 @@ paths:
         - rank_auth:
           - write:students
           - read:students
-          
+
     put:
       tags:
       - student
@@ -155,15 +110,19 @@ paths:
           format: int64
           example: 0
       requestBody:
-            description: Updated student object
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Student'    
+        description: Updated student object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Student'
+        required: true
       responses:
         '200':
           description: successful operation
-          content: {}
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
         '400':
           description: Invalid ID supplied
           content: {}
@@ -172,7 +131,7 @@ paths:
           content: {}
       security:
        - rank_auth:
-         - admin          
+         - admin
     delete:
       tags:
       - student
@@ -202,14 +161,14 @@ paths:
           content: {}
       security:
        - rank_auth:
-         - admin 
+         - admin
 
   /user:
     post:
       tags:
       - user
       summary: Create user
-      description: This can only be done by the logged in user.
+      description: This can only be done by logged in user.
       operationId: createUser
       requestBody:
         description: Created user object
@@ -226,10 +185,10 @@ paths:
           description: successful operation
           content: {}
         '400':
-          description: bad request
+          description: Wrong input
           content: {}
       x-codegen-request-body-name: body
-      
+
   /user/login:
     get:
       tags:
@@ -273,7 +232,7 @@ paths:
         '400':
           description: Invalid username/password supplied
           content: {}
-          
+
   /user/logout:
     get:
       tags:
@@ -284,7 +243,7 @@ paths:
         '200':
           description: successful operation
           content: {}
-          
+
   /user/{username}:
     get:
       tags:
@@ -317,12 +276,12 @@ paths:
       security:
         - rank_auth:
           - read:users
-          
+
     put:
       tags:
       - user
       summary: Updated user
-      description: This can only be done by the logged in user.
+      description: This can only be done by the logged in admin.
       operationId: updateUser
       parameters:
       - name: username
@@ -332,13 +291,19 @@ paths:
         schema:
           type: string
       requestBody:
-        description: Updated user object
+        description: Update user object
         content:
-          '*/*':
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
       responses:
+        200:
+          description: Updated user object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
         400:
           description: Invalid user supplied
           content: {}
@@ -349,7 +314,7 @@ paths:
       security:
         - rank_auth:
           - admin
-          
+
     delete:
       tags:
       - user
@@ -372,52 +337,61 @@ paths:
           content: {}
       security:
       - rank_auth:
-        - admin  
+        - admin
 
   /rank:
     post:
       tags:
       - rank
       summary: Add a new rank
-      description: Operation to add student
-      requestBody: 
+      description: Operation to new rank
+      requestBody:
         content:
           application/json:
-            schema: 
+            schema:
               $ref: '#/components/schemas/Rank'
-      responses: 
+        required: true
+      responses:
         '201':
           description: Record Successfully Added
         '400':
-          description: Invalid Reservation
+          description: Wrong input
           content: {}
       x-codegen-request-body-name: body
       security:
       - rank_auth:
         - write:rank
         - read:rank
-    
+
+  /rank/{lowest_grade}:
     get:
       tags:
       - rank
-      summary: Get all ranks
-      description: getting of all ranks
+      summary: Get all ranks till lowest grade
+      description: Operation to get of all ranks
       operationId: getRanks
+      parameters:
+      - name: lowest_grade
+        in: path
+        description: 'Grade for lower bound of your rating'
+        required: true
+        schema:
+          type: number
       responses:
         200:
-          description: "successful operation. all ranks are returned"
+          description: "successful operation."
           content:
             application/json:
               schema:
-                type: "array"
-                items:
-                  $ref: '#/components/schemas/Ranks'
+                $ref: '#/components/schemas/Rank'
+        400:
+          description: 'Oops... seems that you overestimate your students'
         401:
-          description: 'Something went wrong, probably you dont have any ranks yet'
+          description: "Something went wrong, probably you don't have student in your rating"
       security:
       - api_key: []
-      
-  /rank/{rankId}:
+
+  /rank/{studentId}:
     put:
       tags:
       - rank
@@ -425,7 +399,7 @@ paths:
       description: updating rank owned by current user
       operationId: updateRank
       parameters:
-      - name: rankId
+      - name: studentId
         in: path
         required: true
         description: 'the rank id that needs to be updated'
@@ -453,19 +427,19 @@ paths:
       security:
       - rank_auth:
         - write:rank
-        - read:rank     
-          
+        - read:rank
+
     delete:
       tags:
       - rank
-      summary: Delete rating
-      description: deleting existing rating owned by current user
+      summary: Delete rank
+      description: deleting existing rank owned by current user
       operationId: deleteRating
       parameters:
-      - name: rankId
+      - name: studentId
         in: path
         required: true
-        description: 'rating id that needs to be updated'
+        description: 'student id that needs to be updated in rating'
         schema:
           type: integer
           format: int64
@@ -476,7 +450,7 @@ paths:
           description: Invalid ID supplied
           content: {}
         '404':
-          description: Reservation not found
+          description: Rank not found
           content: {}
       security:
       - rank_auth:
@@ -487,6 +461,11 @@ paths:
 components:
   schemas:
     Student:
+      required:
+      - StudentId
+      - StudentFirstName
+      - StudentLastName
+      - StudentAverageGrade
       type: object
       properties:
         StudentId:
@@ -498,24 +477,26 @@ components:
         StudentLastName:
           type: string
           example: Cena
-        StudentAverageMark:
+        StudentAverageGrade:
           type: number
           minimum: 0
           exclusiveMinimum: true
           maximum: 12
           example: 10.4
-        stuudentAge:
+        studentAge:
           type: integer
           example: 16
       xml:
         name: student
-    
-    Students:
-      type: array
-      items: 
-        $ref: '#/components/schemas/Student'
-        
-    User: 
+
+    User:
+      required:
+      - Id
+      - userName
+      - firstName
+      - lastName
+      - email
+      - password
       type: object
       properties:
         Id:
@@ -539,28 +520,22 @@ components:
           format: int32
       xml:
         name: user
-        
+
     Rank:
+      required:
+      - studentId
+      - lastChange
+      - changedBy
       type: object
       properties:
-        studentRank:
-          type: integer
-          example: 6
-        student:
+        studentId:
           $ref: '#/components/schemas/Student'
         lastChange:
-          description: Date of last change 
+          description: Date of last change
           type: string
           format: date-time
         changedBy:
-          allOf:
-            - $ref: '#/components/schemas/User'
-            - description: Person who made a certain change
-            
-    Ranks:
-      type: array
-      items: 
-        $ref: '#/components/schemas/Rank'
+          $ref: '#/components/schemas/User'
         
         
   securitySchemes:

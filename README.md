@@ -1,7 +1,13 @@
 # PP-lab4
-##Install dependency
+
+###Install dependency
+
 ```pipenv install```
-##Activate virtual environment
+
+###Activate virtual environment
+
 ```source .venv/bin/activate```
-##Launch waitress
+
+###Launch waitress
+
 ```waitress-serve --port=5000 main:app```

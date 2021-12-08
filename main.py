@@ -217,13 +217,13 @@ def get_all_ranks():
 def get_rating():
     session = Session()
     try:
-        ranks = session.query(Rank).join(Student).filter(Rank.student_id == Student.id).order_by(desc(Student.student_average_grade))
+        rating = session.query(Student).join(Rank).filter(Rank.student_id == Student.id).order_by(desc(Student.student_average_grade))
     except:
-        ranks = []
+        rating = []
 
-    ranks_dto = RankSchema(many=True)
+    rating_dto = StudentSchema(many=True)
 
-    return jsonify(ranks_dto.dump(ranks)), 200
+    return jsonify(rating_dto.dump(rating)), 200
 
 @app.route(BASE_PATH + RANK_PATH + '/<Id>', methods=['PUT'])
 def update_rank(Id):

@@ -1,0 +1,26 @@
+BASE_PATH = '/api/v1'
+USER_PATH = '/user'
+STUDENT_PATH = '/student'
+RANK_PATH = '/rank'
+RATING_PATH = '/rating'
+
+SOMETHING_WENT_WRONG = 'oooops...something went wrong'
+CANT_CHANGE_IDENTIFIER = 'Impossible to change identifier'
+
+USER_NOT_FOUND = 'User not found'
+USER_ALREADY_EXISTS = 'Such user already exists'
+USER_CREATED = 'User successfully created'
+USER_UPDATED = 'User successfully changed'
+USER_DELETED = 'User successfully deleted'
+
+STUDENT_NOT_FOUND = 'Student not found'
+STUDENT_ALREADY_EXISTS = 'Such student already exists'
+STUDENT_CREATED = 'Student successfully created'
+STUDENT_UPDATED = 'Student successfully changed'
+STUDENT_DELETED = 'Student successfully deleted'
+
+RANK_NOT_FOUND = 'Rank not found'
+RANK_ALREADY_EXISTS = 'Such rank already exists'
+RANK_CREATED = 'Rank successfully created'
+RANK_UPDATED = 'Rank successfully changed'
+RANK_DELETED = 'Rank successfully deleted'

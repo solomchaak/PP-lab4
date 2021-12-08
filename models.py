@@ -11,7 +11,7 @@ from sqlalchemy import (
     ForeignKey,
 )
 
-from sqlalchemy import orm, create_engine
+from sqlalchemy import orm, create_engine, desc
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 
@@ -55,7 +55,7 @@ class Student(Base):
     id = Column(Integer, primary_key=True, unique=True)
     student_first_name = Column(String(length=45), nullable=False)
     student_last_name = Column(String(length=45), nullable=False)
-    student_average_grade = Column(DECIMAL(10, 2), nullable=False)
+    student_average_grade = Column(Integer, nullable=False)
     student_age = Column(Integer, nullable=True)
 
     child_rank = relationship("Rank")
@@ -75,9 +75,6 @@ class Rank(Base):
     last_change = Column(TIMESTAMP, nullable=False)
     changed_by = Column(String(length=45), ForeignKey("User.username"), nullable=False)
 
-    #child_student = relationship("student")
-    #child_user = relationship("user")
-
     def __str__(self):
         return f"rank id : {self.id}\n" \
                f"student id : {self.student_first_name}\n" \
@@ -87,5 +84,5 @@ class Rank(Base):
     # child_user = orm.relationship("User")
     # child_student = orm.relationship("Student")
 
-# alembic revision --autogenerate -m "First"
+# alembic revision --autogenerate -m "second"
 # alembic upgrade head

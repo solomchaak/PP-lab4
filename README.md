@@ -10,4 +10,4 @@
 
 ###Launch waitress
 
-```waitress-serve --port=5000 main:app```
+```waitress-serve --port=8910 main:app```

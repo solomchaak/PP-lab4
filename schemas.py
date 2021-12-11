@@ -6,7 +6,7 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'phone', 'password')
+        fields = ('username', 'first_name', 'last_name', 'email', 'phone', 'login', 'super_user', 'password')
 
 class StudentSchema(SQLAlchemyAutoSchema):
     class Meta:

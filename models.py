@@ -5,7 +5,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    DECIMAL,
+    Boolean,
     DateTime,
     TIMESTAMP,
     ForeignKey,
@@ -36,16 +36,20 @@ class User(Base):
     last_name = Column(String(length=45), nullable=False)
     email = Column(String(length=45), nullable=False, unique=True)
     phone = Column(String(length=45), nullable=True, unique=True)
+    login = Column(String(length=45), nullable=False, unique=True)
     password = Column(String(length=100), nullable=False)
+    super_user = Column(Boolean, nullable=False)
 
     child_rank = relationship("Rank")
 
     def __str__(self):
-        return f"username : {self.UserName}\n" \
-               f"first name : {self.firstName}\n" \
-               f"last name : {self.lastName}\n" \
+        return f"username : {self.username}\n" \
+               f"first name : {self.first_name}\n" \
+               f"last name : {self.last_name}\n" \
                f"email : {self.email}\n" \
                f"phone : {self.phone}\n" \
+               f"login : {self.login}\n" \
+               f"super user : {self.super_user}\n" \
                f"password : {self.password}\n"
 
 

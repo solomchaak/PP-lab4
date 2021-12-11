@@ -1,11 +1,13 @@
 BASE_PATH = '/api/v1'
 USER_PATH = '/user'
+LOGIN_PATH = '/login'
 STUDENT_PATH = '/student'
 RANK_PATH = '/rank'
 RATING_PATH = '/rating'
 
 SOMETHING_WENT_WRONG = 'oooops...something went wrong'
 CANT_CHANGE_IDENTIFIER = 'Impossible to change identifier'
+ACCESS_DENIED = 'Access denied'
 
 USER_NOT_FOUND = 'User not found'
 USER_ALREADY_EXISTS = 'Such user already exists'
@@ -21,6 +23,7 @@ STUDENT_DELETED = 'Student successfully deleted'
 
 RANK_NOT_FOUND = 'Rank not found'
 RANK_ALREADY_EXISTS = 'Such rank already exists'
+WRONG_CHANGER = 'Mark that exactly you have changed this rank'
 RANK_CREATED = 'Rank successfully created'
 RANK_UPDATED = 'Rank successfully changed'
 RANK_DELETED = 'Rank successfully deleted'

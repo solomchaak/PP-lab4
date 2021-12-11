@@ -2,11 +2,11 @@ from models import Session, User, Student, Rank
 session = Session()
 
 user1 = User(username = 'solomchaak', first_name='Ivan', last_name='Solomchak',
-             email='ivan.solomchak@mail.net', phone='+380999977777', password='123123')
+             email='ivan.solomchak@mail.net', phone='+380999977777', login='solomchaak', super_user=False, password='123123')
 user2 = User(username = 'urasuk', first_name='Yurii', last_name='Yanio',
-             email='exampl@gmail.com', phone='+380957777777', password='12345678')
+             email='exampl@gmail.com', phone='+380957777777', login='urasuk', super_user=False, password='12345678')
 user3 = User(username = 'admin', first_name='name', last_name='surname',
-             email='exampl3@gmail.com', phone='+380922777777', password='root')
+             email='admin@gmail.com', phone='+380922777777', login='adm', super_user=True, password='root')
 
 session.add(user1)
 session.add(user2)

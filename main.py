@@ -10,7 +10,7 @@ import bcrypt
 from flask.json import JSONEncoder
 
 app = Flask(__name__)
-app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_SECRET_KEY"] = "super-secret"
 jwt = JWTManager(app)
 
 @app.route("/api/v1/hello-world-12")
